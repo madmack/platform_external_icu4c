@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_android_text_util_ArabicShaper_reorderReshapeBidiText
   (JNIEnv *, jclass, jcharArray, jcharArray, jint, jint);
 
+/*
+ * Class:     android_text_util_ArabicShaper
+ * Method:    reshapeArabicText
+ * Signature: ([C[CII)I
+ */
+JNIEXPORT jint JNICALL Java_android_text_util_ArabicShaper_reshapeArabicText
+  (JNIEnv *, jclass, jcharArray, jcharArray, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

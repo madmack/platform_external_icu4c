@@ -28,7 +28,9 @@ extern "C" {
 static JNINativeMethod gArabicShaperMethods[] = {
 		/* name, signature, funcPtr */
 		{"reorderReshapeBidiText", "([C[CII)I",
-				(void*)Java_android_text_util_ArabicShaper_reorderReshapeBidiText}
+			(void*)Java_android_text_util_ArabicShaper_reorderReshapeBidiText},
+		{"reshapeArabicText", "([C[CII)I",
+			(void*)Java_android_text_util_ArabicShaper_reshapeArabicText}
 };
 
 static int registerNativeMethods(JNIEnv* env, const char* className,
@@ -91,6 +93,8 @@ JNIEXPORT jint JNICALL Java_android_text_util_ArabicShaper_reorderReshapeBidiTex
 
     UBiDi *para = ubidi_openSized(n, 0, &status);
 
+    ubidi_setReorderingMode(para, UBIDI_REORDER_INVERSE_LIKE_DIRECT);
+
     jchar* src = env->GetCharArrayElements(srcArray, NULL);
 
     if (src != NULL && para != NULL && U_SUCCESS(status)) {
@@ -135,5 +139,54 @@ JNIEXPORT jint JNICALL Java_android_text_util_ArabicShaper_reorderReshapeBidiTex
 
  }
 
+/*
+ * Class:     android_text_util_ArabicShaper
+ * Method:    reshapeArabicText
+ * Signature: ([C[CII)I
+ */
+JNIEXPORT jint JNICALL Java_android_text_util_ArabicShaper_reshapeArabicText
+  (JNIEnv *env, jclass c, jcharArray srcArray, jcharArray destArray, jint offset, jint n) {
+    bool hasErrors = false;
+    jint outputSize = 0;
+    UChar *intermediate = new UChar[n];
+    UChar *intermediate2 = new UChar[n];
+    UChar *output = new UChar[n];
+    UErrorCode status = U_ZERO_ERROR;
+
+    jchar* src = env->GetCharArrayElements(srcArray, NULL);
+
+    if (src != NULL) {
+
+        ubidi_writeReverse (src+offset, n, intermediate, n, UBIDI_DO_MIRRORING | UBIDI_REMOVE_BIDI_CONTROLS, &status);
+
+        if (U_SUCCESS(status)) {
+            outputSize = u_shapeArabic(intermediate, n, intermediate2, n, U_SHAPE_TEXT_DIRECTION_VISUAL_LTR | U_SHAPE_LETTERS_SHAPE | U_SHAPE_LENGTH_FIXED_SPACES_AT_END, &status);
+
+            if (U_SUCCESS(status)) {
+
+                ubidi_writeReverse (intermediate2, n, output, n, UBIDI_REMOVE_BIDI_CONTROLS, &status);
+
+                env->SetCharArrayRegion(destArray, 0, outputSize, output);
+            } else
+                hasErrors = true;
+        } else
+            hasErrors = true;
+    } else
+        hasErrors = true;
+
+    delete [] intermediate;
+    delete [] intermediate2;
+    delete [] output;
+
+    env->ReleaseCharArrayElements(srcArray, src, JNI_ABORT);
+
+    if (hasErrors) {
+            jclass Exception = env->FindClass("java/lang/RuntimeException");
+            env->ThrowNew(Exception,NULL);
+    }
+
+
+    return outputSize;
+}
 
 }
