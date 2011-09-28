@@ -96,6 +96,13 @@ JNIEXPORT jint JNICALL Java_android_text_util_ArabicShaper_reorderReshapeBidiTex
     ubidi_setReorderingMode(para, UBIDI_REORDER_INVERSE_LIKE_DIRECT);
 
     jchar* src = env->GetCharArrayElements(srcArray, NULL);
+    
+    //fix for dancing letters in WhatsApp
+    for (jint i=offset; i<offset+n; i++) {
+    	if (src[i] == 0x200F) {
+    		src[i] = 0x0020;
+    	}
+    }
 
     if (src != NULL && para != NULL && U_SUCCESS(status)) {
 
@@ -154,6 +161,13 @@ JNIEXPORT jint JNICALL Java_android_text_util_ArabicShaper_reshapeArabicText
     UErrorCode status = U_ZERO_ERROR;
 
     jchar* src = env->GetCharArrayElements(srcArray, NULL);
+
+    //fix for dancing letters in WhatsApp
+    for (jint i=offset; i<offset+n; i++) {
+    	if (src[i] == 0x200F) {
+    		src[i] = 0x0020;
+    	}
+    }
 
     if (src != NULL) {
 
