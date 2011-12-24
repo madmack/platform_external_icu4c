@@ -19,7 +19,7 @@ LOCAL_PATH:= $(call my-dir)
 # Common definitions.
 #
 
-src_files := \
+#src_files := \
 	cmemory.c          cstring.c          \
 	cwchar.c           locmap.c           \
 	punycode.c         putil.c            \
@@ -59,7 +59,7 @@ src_files := \
  	propsvec.c         ulist.c            \
  	uloc_tag.c
 
-src_files += \
+#src_files += \
         bmpset.cpp      unisetspan.cpp   \
 	brkeng.cpp      brkiter.cpp      \
 	caniter.cpp     chariter.cpp     \
@@ -99,6 +99,17 @@ src_files += \
 	normalizer2impl.cpp      normalizer2.cpp    \
 	filterednormalizer2.cpp  ucol_swp.cpp       \
 	uprops.cpp      utrie2.cpp \
+	android_text_util_ArabicShaper.cpp
+
+src_files := \
+	ubidi_props.c	cmemory.c \
+	udataswp.c	uchar.c \
+	uinvchar.c 	ustring.c \
+	utf_impl.c	umath.c \
+	ushape.c	mutex.cpp \
+	umutex.c	ubidi.c \
+	ubidiln.c	ubidiwrt.c \
+	utrie2.cpp	utrie.c \
 	android_text_util_ArabicShaper.cpp
 
 
